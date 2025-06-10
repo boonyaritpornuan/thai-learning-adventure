@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thai Learning Adventure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+      // Initialize process.env.API_KEY if it's not already defined for browser environment
+      if (typeof process === 'undefined') {
+        window.process = { env: {} };
+      }
+      // Attempt to load API_KEY from environment (e.g., set by a build process or a script)
+      // For local development without a backend, you might manually set it here for testing,
+      // but in production, it should be managed securely.
+      // Example: window.process.env.API_KEY = "YOUR_GEMINI_API_KEY";
+      // Ensure this is handled securely and not hardcoded for production builds.
+      // If this app is intended to be run where API_KEY is globally available (e.g. specific platforms),
+      // this manual setup might not be needed.
+       if (!process.env.API_KEY) {
+         // A placeholder or a mechanism to fetch/set it.
+         // For now, we'll leave it to be set by the environment as per instructions.
+         console.info("API_KEY is expected to be set in the environment (process.env.API_KEY)");
+       }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.2",
+    "@google/genai": "https://esm.sh/@google/genai@^1.4.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-sky-50">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

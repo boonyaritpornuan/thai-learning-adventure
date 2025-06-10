@@ -4,15 +4,18 @@ import { GeneratedLessonItem, ActivityQuestion } from '../types';
 import { GEMINI_TEXT_MODEL } from '../constants';
 
 const API_KEY = process.env.API_KEY;
+let ai: GoogleGenAI | null = null;
 
-if (!API_KEY) {
-  console.error("API_KEY environment variable is not set. This application requires a valid Gemini API Key to function.");
-  // Using a placeholder will cause API errors. User must configure their environment.
+if (API_KEY) {
+  try {
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+  } catch (error) {
+    console.error("Failed to initialize GoogleGenAI with API_KEY. Check if the API key is valid. Falling back to mock data where applicable.", error);
+    // ai remains null, and functions below will handle it by returning mock data.
+  }
+} else {
+  console.warn("API_KEY environment variable is not set. The application will attempt to use mock data where available. For full functionality, please ensure a valid Gemini API_KEY is configured in your environment (process.env.API_KEY).");
 }
-
-// Initialize AI client. If API_KEY is undefined, this will likely cause issues at runtime.
-// The user is responsible for ensuring API_KEY is available in process.env.
-const ai = new GoogleGenAI({ apiKey: API_KEY! }); // Use non-null assertion if confident API_KEY will be set, or handle more gracefully.
 
 const parseJsonResponse = <T,>(responseText: string, itemKey?: string): T | null => {
   let jsonStr = responseText.trim();
@@ -54,13 +57,12 @@ const parseJsonResponse = <T,>(responseText: string, itemKey?: string): T | null
 };
 
 export const generateLessonMaterial = async (prompt: string, itemKey: string): Promise<GeneratedLessonItem | null> => {
-  if (!API_KEY) { // Check if API key is missing
-     console.error("Gemini API key is not configured. Cannot generate lesson material.");
-     // Return mock data or throw error. For now, returning specific mock for visibility.
+  if (!ai) { // Check if AI client failed to initialize or API key was missing/invalid
+     console.error("Gemini API client is not initialized (API_KEY might be missing or invalid). Using mock data for lesson material.");
      return {
         itemKey: itemKey,
         thaiScript: itemKey.startsWith('ก+') ? itemKey.split('+').join('') : (itemKey === 'อะ' ? '◌ะ' : itemKey),
-        description: `คำอธิบายตัวอย่างสำหรับ ${itemKey} (API Key Missing)`,
+        description: `คำอธิบายตัวอย่างสำหรับ ${itemKey} (API Key Missing or Invalid)`,
         exampleWord: `ตัวอย่าง${itemKey}`,
         imageSuggestion: `ภาพน่ารักสำหรับ ${itemKey}`,
         pronunciation: `เสียงอ่าน ${itemKey}`,
@@ -90,16 +92,16 @@ export const generateLessonMaterial = async (prompt: string, itemKey: string): P
 };
 
 export const generateActivityQuestion = async (prompt: string): Promise<ActivityQuestion | null> => {
-   if (!API_KEY) {
-    console.error("Gemini API key is not configured. Cannot generate activity question.");
+   if (!ai) { // Check if AI client failed to initialize or API key was missing/invalid
+    console.error("Gemini API client is not initialized (API_KEY might be missing or invalid). Using mock data for activity question.");
     return {
-      question: "คำถามตัวอย่าง (API Key Missing)",
+      question: "คำถามตัวอย่าง (API Key Missing or Invalid)",
       options: [
         { text: "คำตอบ 1 (ถูก)", correct: true },
         { text: "คำตอบ 2", correct: false },
         { text: "คำตอบ 3", correct: false },
       ],
-      explanation: "นี่คือคำอธิบายเมื่อ API Key ขาดหายไป",
+      explanation: "นี่คือคำอธิบายเมื่อ API Key ขาดหายไปหรือเกิดข้อผิดพลาดในการเริ่มต้น API",
     };
   }
   try {

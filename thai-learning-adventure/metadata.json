@@ -1,5 +1,6 @@
 {
   "name": "Thai Learning Adventure",
   "description": "An interactive web application to help young children learn basic Thai consonants, vowels, and vocabulary through engaging lessons and activities, powered by Gemini API for dynamic content generation.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "prompt": ""
 }
